@@ -1,0 +1,109 @@
+
+import sqlite3
+import tkinter as tk
+
+
+conn = sqlite3.connect('stravaDiscordBot.db')
+c = conn.cursor()
+
+c.execute('CREATE TABLE IF NOT EXISTS routes(route_id INTEGER PRIMARY KEY, \
+                                                route_name TEXT, \
+                                                category TEXT, \
+                                                type TEXT, \
+                                                filename TEXT, \
+                                                distance REAL, \
+                                                average_moving_time REAL, \
+                                                elev_gain REAL, \
+                                                polyline TEXT, \
+                                                comments TEXT, \
+                                                guild_id INTEGER, \
+                                                isPublic TEXT)')
+
+
+def dataEntry(tableName, dict):
+    '''Insert a given dict into a sqlite3 database
+    
+    Inputs
+        tableName : name of table to insert dict into
+        dict : dictionary to insert into database table
+    '''
+
+    sql = 'INSERT OR REPLACE INTO {} ({}) VALUES ({});'.format(tableName,
+                                                    ','.join(dict.keys()),
+                                                    ','.join(['?']*len(dict)))
+    c.execute(sql, tuple(dict.values()))
+    conn.commit()
+
+
+def create_entry(root, label_text, default=None):
+    entry_frame = tk.Frame(root)
+    entry_frame.pack(side='top', anchor="w")
+
+    if default == None:
+        entry_var = tk.StringVar()
+    else:
+        entry_var = tk.StringVar(value=default)
+
+    L1 = tk.Label(entry_frame, text=label_text)
+    L1.pack(side='left', anchor="w")
+    E1 = tk.Entry(entry_frame, bd=5, textvariable=entry_var)
+    E1.pack(side='right', anchor="e")
+    return entry_var
+
+
+def create_check(root, label_text):
+    entry_frame = tk.Frame(root)
+    entry_frame.pack(side='top')
+
+    check_var = tk.IntVar()
+    C1 = tk.Checkbutton(root, text=label_text, variable=check_var,
+                        onvalue = 1, offvalue = 0, height=5,
+                        width = 20)
+    C1.pack(side='top')
+    return check_var
+
+
+def create_button(root, label_text, command, routeDict):
+    entry_frame = tk.Frame(root)
+    entry_frame.pack(side='top')
+
+    B1 = tk.Button(entry_frame, text=label_text, command=lambda: addRoute(routeDict))
+    B1.pack(side='top')
+    return
+
+
+def addRoute(routeDict):
+    dataEntry('routes',routeDict)
+    
+
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+
+    route_id = create_entry(root, label_text='route_id', default=13475935834)
+    guild_id = create_entry(root, label_text='guild_id', default=856624415508922379)
+    route_name = create_entry(root, label_text='route_name', default='route_name')
+    comments = create_entry(root, label_text='comments', default='comments here')
+    type = create_entry(root, label_text='type', default='Run')
+    filename = create_entry(root, label_text='filename', default='filename_here')
+    distance = create_entry(root, label_text='distance', default=1609)
+    average_moving_time = create_entry(root, label_text='average_moving_time', default=600)
+    elev_gain = create_entry(root, label_text='elev_gain', default=25)
+    poly = create_entry(root, label_text='polyline', default='.23br89nk2.4fho8')
+
+    isPublic = create_check(root, 'isPublic')
+
+    routeDict = {'guild_id': int(guild_id.get()),
+                 'route_name': str(route_name.get()),
+                 'comments': str(comments.get()),
+                 'type': str(type.get()),
+                 'filename': str(filename.get()),
+                 'distance': int(distance.get()),
+                 'average_moving_time': int(average_moving_time.get()),
+                 'elev_gain': int(elev_gain.get()),
+                 'polyline': str(poly.get())}
+
+    create_button(root, 'AddRoute', addRoute, routeDict)
+
+    root.mainloop()
