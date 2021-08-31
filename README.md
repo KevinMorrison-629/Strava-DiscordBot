@@ -1,8 +1,9 @@
 # Strava-DiscordBot
 A discord-based bot implementation of the Strava API for showcasing club leaderboards and user activities.
 
-There are some functions that are currently not implemented, though their structure exists
-Much of this code is not commented as it was mainly just for my use, and initially was just a project for me
-to learn how to implement Strava into a Discord Bot. Sorry about that.
+The code is not written for scale in mind, and has yet to implement some key features.
+I have yet to implement limit checks for requests to the strava API, staggered requests for updating access tokens, and webhooks to update user activities
+The authorization command is not yet completed (not very user friendly)
+there are still a few bugs and everything has yet to be comprehensively tested.
 
 If you still intend to use it, good luck, read what comments I do have, and enjoy!
